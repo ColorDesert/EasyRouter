@@ -1,0 +1,39 @@
+apply plugin: 'maven'
+
+Properties rootGradleProperties = new Properties()
+rootGradleProperties.load(getRootProject().file("gradle.properties").newDataInputStream())
+def POM_URL = rootGradleProperties.getProperty("POM_URL")
+def POM_GROUP_ID = rootGradleProperties.getProperty("POM_GROUP_ID")
+def POM_VERSION = rootGradleProperties.getProperty("POM_VERSION")
+
+Properties projectGradleProperties = new Properties()
+projectGradleProperties.load(project.file("gradle.properties").newDataInputStream())
+def POM_ARTIFACT_ID = projectGradleProperties.getProperty("POM_ARTIFACT_ID")
+
+println("maven-publish POM_URL= " + POM_URL)
+println("maven-publish POM_GROUP_ID= " + POM_GROUP_ID)
+println("maven-publish POM_VERSION= " + POM_VERSION)
+println("maven-publish POM_ARTIFACT_ID= " + POM_ARTIFACT_ID)
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri(POM_URL)) {
+            }
+            pom.groupId = POM_GROUP_ID
+            pom.artifactId = POM_ARTIFACT_ID
+            pom.version = POM_VERSION
+
+            //遇到工程级别的依赖  修正版本号
+            pom.whenConfigured { pom ->
+                pom.dependencies.forEach { dep ->
+                    if (dep.getVersion() == "unspecified") {
+                        dep.setVersion(POM_VERSION)
+                        dep.setGroupId(POM_GROUP_ID)
+                    }
+                }
+            }
+
+        }
+    }
+}

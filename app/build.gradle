@@ -1,0 +1,163 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'kotlin-android-extensions'
+    id 'com.desert.router.gradle'
+}
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+
+    defaultConfig {
+        applicationId "com.desert.router"
+        minSdkVersion 16
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+
+        multiDexEnabled true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    signingConfigs{
+        release{
+            keyAlias 'key0'
+            keyPassword '123456'
+            storeFile file(uri('..\\router.jks'))
+            storePassword '123456'
+        }
+    }
+
+    buildTypes {
+        release {
+            buildConfigField('String', "hh", "\"jkk\"")
+            resValue("string", "app_name1", "jkkk")
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
+//    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.72"
+    //implementation project(':Login')
+    implementation project(':router-runtime')
+    implementation project(':router-annotations')
+    kapt project(':router-processor')
+}
+
+class CustomInnerConfig {
+    String key
+}
+
+//方式一定义extension
+extensions.create("customInnerConfig", CustomInnerConfig.class)
+
+task("CustomInnerTask", group: 'CustomTask').doLast {
+    println("CustomInnerTask,key=${customInnerConfig.key}")
+}
+customInnerConfig {
+    key = 'haha'
+}
+//方式一结束
+//router {
+//    wikiDir = "D:\\ProjectCode\\Router"
+//}
+//编译依赖检查
+//configurations.all{
+//    resolutionStrategy.eachDependency{ details->
+//        def dependency=details.requested.toString()
+//        if (dependency.contains("androidx.constraintlayout:constraintlayout")){
+//            throw  new RuntimeException("不允许使用 $dependency")
+//        }
+//
+//    }
+//}
+
+//练习语法
+//def array = [1, 2, 3, 4, 5, 6, 7, 8]
+//array.add(9)
+//array << 0
+//
+//array.forEach {
+//    println("item is $it")
+//}
+//
+//def result1 = array.any {
+//    it % 2 == 0
+//}
+//
+//println("array any result :$result1")
+//
+//def result2 = array.every {
+//    it % 2 == 0
+//}
+//
+//println("array evary result :$result2")
+//def map = ["name": "xiaoming", "age": "123", "height": "178"]
+//println("name is $map.name")
+//
+////自定义DSL
+//def androidConfig = {
+//    compileSdkVersion 29
+//    defaultConfig {
+//        versionName "1.0"
+//    }
+//}
+//
+//
+//class DefaultConfig {
+//    private String versionName
+//
+//    def versionName(String versionName) {
+//        this.versionName = versionName
+//    }
+//
+//    @Override
+//    String toString() {
+//        return "DefaultConfig {versionName :$versionName}"
+//    }
+//}
+//
+//class Android {
+//    private int compileSdkVersion
+//    private DefaultConfig defaultConfig
+//
+//    Android() {
+//        //这个
+//        defaultConfig = new DefaultConfig()
+//    }
+//
+//    def compileSdkVersion(int compileSdkVersion) {
+//        this.compileSdkVersion = compileSdkVersion
+//    }
+//
+//    def defaultConfig(Closure closure) {
+//        //将闭包和具体对象关联起来
+//        closure.setDelegate(defaultConfig)
+//        closure.call()
+//    }
+//
+//    @Override
+//    String toString() {
+//        return "MyAndroid {compileSdkVersion :$compileSdkVersion, defaultConfig:$defaultConfig} "
+//    }
+//}
+//
+//Android android = new Android()
+//androidConfig.delegate = android
+//androidConfig.call()
+//println("android: $android")

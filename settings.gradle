@@ -1,0 +1,7 @@
+include ':router-runtime'
+//include ':Login'
+include ':router-processor'
+include ':router-annotations'
+include ':app'
+include ':router-gradle-plugin'
+rootProject.name = "Router"
